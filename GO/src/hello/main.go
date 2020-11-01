@@ -47,9 +47,12 @@ func dijkstra(sommetDepart string, liens map[string][][]string, wg *sync.WaitGro
 
 	}
 	//fmt.Println(tableCouts)
-	continuer := false
-	cheminLeger := inf
 	var prochainSommet string
+	var continuer bool
+	var cheminLeger int
+	continuer = false
+	cheminLeger = inf
+
 	itineraire := make([]string, 0)
 	//Condition d'arrêt : Tous les chemins sont finaux
 	//On en profite pour choisir le prochain sommet a étudier
@@ -57,11 +60,13 @@ func dijkstra(sommetDepart string, liens map[string][][]string, wg *sync.WaitGro
 		if tableCouts[key].fini == false {
 			continuer = true
 		}
-		if tableCouts[key].poids < cheminLeger {
+		if tableCouts[key].poids < cheminLeger && !tableCouts[key].fini {
 			cheminLeger = tableCouts[key].poids
 			prochainSommet = key
+
 		}
 	}
+	fmt.Println("Prochain sommet : ", prochainSommet)
 	itineraire = append(itineraire, prochainSommet)
 	fmt.Println(continuer)
 	fmt.Println(itineraire)
@@ -72,6 +77,7 @@ func dijkstra(sommetDepart string, liens map[string][][]string, wg *sync.WaitGro
 	tableCouts[prochainSommet] = ch
 
 	fmt.Println(tableCouts)
+	fmt.Println(liens[prochainSommet])
 
 	/*fmt.Print("sommet :")
 	fmt.Print(sommet)
