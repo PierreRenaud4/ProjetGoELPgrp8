@@ -14,12 +14,64 @@ import (
 	"sync"
 )
 
+type chemin struct {
+	poids            int
+	sommetsEmpruntes []string
+	fini             bool
+}
+
 //*******************************************************************************
 //
 //*******************************************************************************
 // fonction de l'alogorithme dijkstra appeler par une go routine
-func dijkstra(sommet string, liens map[string][][]string, wg *sync.WaitGroup) {
+func dijkstra(sommetDepart string, liens map[string][][]string, wg *sync.WaitGroup) {
+
 	defer wg.Done()
+	const inf = 999
+
+	//Initialisation
+	tableCouts := make(map[string]chemin)
+
+	for key, _ := range liens {
+
+		var chemin1 chemin
+		if key == sommetDepart {
+			chemin1.poids = 0
+		} else {
+			chemin1.poids = inf
+		}
+		chemin1.sommetsEmpruntes = []string{}
+		chemin1.fini = false
+
+		tableCouts[key] = chemin1
+
+	}
+	//fmt.Println(tableCouts)
+	continuer := false
+	cheminLeger := inf
+	var prochainSommet string
+	itineraire := make([]string, 0)
+	//Condition d'arrêt : Tous les chemins sont finaux
+	//On en profite pour choisir le prochain sommet a étudier
+	for key, _ := range tableCouts {
+		if tableCouts[key].fini == false {
+			continuer = true
+		}
+		if tableCouts[key].poids < cheminLeger {
+			cheminLeger = tableCouts[key].poids
+			prochainSommet = key
+		}
+	}
+	itineraire = append(itineraire, prochainSommet)
+	fmt.Println(continuer)
+	fmt.Println(itineraire)
+	//tant que
+	ch := tableCouts[prochainSommet]
+	ch.fini = true
+	ch.sommetsEmpruntes = itineraire
+	tableCouts[prochainSommet] = ch
+
+	fmt.Println(tableCouts)
 
 	/*fmt.Print("sommet :")
 	fmt.Print(sommet)
@@ -86,16 +138,17 @@ func main() {
 		// exemple : le tableau de "B" va être creer à l'itération 1, ensuite il va être rempli avec le lien 1 ET à l'itération 2 et 3 on va l'agrendir en lui mettant le lien 2 et le lien 3
 		// B :[[lien1][lien2][lien3]]
 	}
-
+	//fmt.Println(m)
 	// Utilisation du principe de go routine en executant simultanément plusieur fonction tout en evitant que l'execution des fonction se chevauche
 	var wg sync.WaitGroup
 	//fmt.Println(m)
-
-	for sommet, _ := range m {
-		wg.Add(1)
-		//fmt.Println(sommet)
-		go dijkstra(sommet, m, &wg)
-	}
+	wg.Add(1)
+	dijkstra("A", m, &wg)
+	//for sommet, _ := range m {
+	//wg.Add(1)
+	//fmt.Println(sommet)
+	//go dijkstra(sommet, m, &wg)
+	//}
 	wg.Wait()
 
 }
