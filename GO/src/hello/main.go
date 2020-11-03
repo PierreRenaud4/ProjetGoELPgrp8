@@ -14,11 +14,13 @@ import (
 	"sync"
 )
 
-type chemin struct {
+type Chemin struct {
 	poids            int
 	sommetsEmpruntes []string
 	fini             bool
 }
+
+type Graphe map[string]*Chemin
 
 //*******************************************************************************
 //
@@ -30,21 +32,15 @@ func dijkstra(sommetDepart string, liens map[string][][]string, wg *sync.WaitGro
 	const inf = 999
 
 	//Initialisation
-	tableCouts := make(map[string]chemin)
+	tableCouts := make(Graphe)
 
 	for key, _ := range liens {
 
-		var chemin1 chemin
+		tableCouts[key] = &Chemin{inf, []string{}, false}
+
 		if key == sommetDepart {
-			chemin1.poids = 0
-		} else {
-			chemin1.poids = inf
+			tableCouts[key].poids = 0
 		}
-		chemin1.sommetsEmpruntes = []string{}
-		chemin1.fini = false
-
-		tableCouts[key] = chemin1
-
 	}
 	//fmt.Println(tableCouts)
 	var prochainSommet string
@@ -71,12 +67,10 @@ func dijkstra(sommetDepart string, liens map[string][][]string, wg *sync.WaitGro
 	fmt.Println(continuer)
 	fmt.Println(itineraire)
 	//tant que
-	ch := tableCouts[prochainSommet]
-	ch.fini = true
-	ch.sommetsEmpruntes = itineraire
-	tableCouts[prochainSommet] = ch
+	tableCouts[prochainSommet].fini = true
+	tableCouts[prochainSommet].sommetsEmpruntes = itineraire
 
-	fmt.Println(tableCouts)
+	//fmt.Println(tableCouts)
 	fmt.Println(liens[prochainSommet])
 
 	/*fmt.Print("sommet :")
