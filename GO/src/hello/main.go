@@ -15,9 +15,9 @@ import (
 )
 
 type Chemin struct {
-	poids            int
-	sommetsEmpruntes []string
-	fini             bool
+	poids           int
+	sommetPrecedent string
+	fini            bool
 }
 
 type Graphe map[string]*Chemin
@@ -36,7 +36,7 @@ func dijkstra(sommetDepart string, liens map[string][][]string, wg *sync.WaitGro
 
 	for key, _ := range liens {
 
-		tableCouts[key] = &Chemin{inf, []string{}, false}
+		tableCouts[key] = &Chemin{inf, "", false}
 
 		if key == sommetDepart {
 			tableCouts[key].poids = 0
@@ -48,10 +48,9 @@ func dijkstra(sommetDepart string, liens map[string][][]string, wg *sync.WaitGro
 	var cheminLeger int
 	var poidsCheminActuel int
 	continuer = true
-	cheminLeger = inf
 	poidsCheminActuel = 0
 
-	itineraire := make([]string, 0)
+	//itineraire := make([]string, 0)
 	//Condition d'arrêt : Tous les chemins sont finaux
 	//On en profite pour choisir le prochain sommet a étudier
 
@@ -74,9 +73,9 @@ func dijkstra(sommetDepart string, liens map[string][][]string, wg *sync.WaitGro
 		//L'itinéraire est mis à jour ainsi que le poids de ce-dernier
 		//Attention ! l'itinéraire peut régresser à un état précédent !!!
 
-		itineraire = append(itineraire, prochainSommet)
+		//itineraire = append(itineraire, prochainSommet)
 
-		poidsCheminActuel += tableCouts[prochainSommet].poids
+		poidsCheminActuel = tableCouts[prochainSommet].poids
 		//le sommet atteint est fixé : son chemin le plus court est compris dans la variable itineraire
 		tableCouts[prochainSommet].fini = true
 		//tableCouts[prochainSommet].sommetsEmpruntes = itineraire
@@ -102,6 +101,7 @@ func dijkstra(sommetDepart string, liens map[string][][]string, wg *sync.WaitGro
 				//On détermine si le chemin étudié est plus avantageux que celui actuel !!!
 				if poidsCheminActuel+nouveauPoids < tableCouts[voisin].poids {
 					tableCouts[voisin].poids = poidsCheminActuel + nouveauPoids
+					tableCouts[voisin].sommetPrecedent = prochainSommet
 				}
 
 			}
