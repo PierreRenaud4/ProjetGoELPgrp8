@@ -18,6 +18,7 @@ type Chemin struct {
 	poids           int
 	sommetPrecedent string
 	fini            bool
+	path            []string
 }
 
 type Graphe map[string]*Chemin
@@ -36,7 +37,7 @@ func dijkstra(sommetDepart string, liens map[string][][]string, wg *sync.WaitGro
 
 	for key, _ := range liens {
 
-		tableCouts[key] = &Chemin{inf, "", false}
+		tableCouts[key] = &Chemin{inf, "", false, make([]string, 0)}
 
 		if key == sommetDepart {
 			tableCouts[key].poids = 0
@@ -109,9 +110,15 @@ func dijkstra(sommetDepart string, liens map[string][][]string, wg *sync.WaitGro
 		}
 		fmt.Println("Sommet traité ! : ", prochainSommet)
 	}
-
+	//Calcul du path et affichage des résultats
 	for key, elem := range tableCouts {
-		fmt.Println("Sommet : ", key, "plus court chemin : ", elem)
+		tableCouts[key].path = append(tableCouts[key].path, key)
+		step := elem.sommetPrecedent
+		for step != "" {
+			tableCouts[key].path = append(tableCouts[key].path, step)
+			step = tableCouts[step].sommetPrecedent
+		}
+		fmt.Println("Sommet : ", key, " , plus court chemin : ", elem.path, " , poids : ", elem.poids)
 	}
 
 	//tant que
