@@ -115,7 +115,7 @@ func main() {
 // fonction de l'alogorithme dijkstra appeler par une go routine
 func dijkstra(sommetDepart string, liens map[string][][]string, wg *sync.WaitGroup) {
 
-	defer wg.Done() //On rend un
+	defer wg.Done()
 	const inf = 999 //On suppose que les poids seront inférieurs à cette valeur
 
 	//Initialisation
